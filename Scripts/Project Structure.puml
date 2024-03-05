@@ -1,0 +1,56 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam groupInheritance 3
+skinparam packageStyle Rectangle
+!pragma useIntermediatePackages false
+
+namespace Authoring {
+    namespace EditorOnly {
+        class GameDebugDisplayAuthoring
+        class GameDebugDisplayAuthoringBaker<GameDebugDisplayAuthoring>
+        GameDebugDisplayAuthoring -- GameDebugDisplayAuthoringBaker
+        struct GameDebugDisplayData
+        GameDebugDisplayData -- GameDebugDisplayAuthoringBaker
+    }
+
+    namespace GameEntity {
+        namespace Prefab {
+            package ExistenceModuleAuthoring{
+            class ExistenceModuleAuthoring
+            struct ExistencePropertiesBaking
+            class ExistenceModuleBaker
+            ExistenceModuleAuthoring -- ExistenceModuleBaker
+            ExistencePropertiesBaking -- ExistenceModuleBaker
+            struct ExistenceModuleBakingSystem
+            ExistenceModuleBaker -- ExistenceModuleBakingSystem
+            }
+            
+            class MovementModuleAuthoring
+            struct MovementPropertiesBaking
+            struct MovementModuleBakingSystem
+            MovementPropertiesBaking -- MovementModuleBakingSystem
+            
+            class PerceptiveModuleAuthoring
+            class PerceptiveModuleBaker
+            PerceptiveModuleAuthoring -- PerceptiveModuleBaker
+            struct PerceptiveBaking
+            struct PerceptiveModuleBakingSystem
+            PerceptiveModuleBaker -- PerceptiveModuleBakingSystem
+            PerceptiveBaking -- PerceptiveModuleBakingSystem
+        }
+    
+        namespace PrefabPackage {
+            class GameEntityAuthoring
+            class GameEntityPrefabAndPrefabPackageBaker
+            GameEntityAuthoring -- GameEntityPrefabAndPrefabPackageBaker
+            MovementModuleAuthoring -- GameEntityPrefabAndPrefabPackageBaker
+            class GenerationLimitModuleAuthoring
+            class GenerationLimitModuleBaker
+            GenerationLimitModuleAuthoring -- GenerationLimitModuleBaker
+            class SampleGridGenerationModuleAuthoring
+            class SampleGridGenerationModuleBaker
+            SampleGridGenerationModuleAuthoring -- SampleGridGenerationModuleBaker
+        }
+    }
+}
+@enduml

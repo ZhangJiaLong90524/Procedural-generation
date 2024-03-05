@@ -1,0 +1,83 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam groupInheritance 3
+skinparam packageStyle Rectangle
+set separator none
+
+package "Project ECS Structure"
+{
+    namespace UnityEngine{
+        class MonoBehaviour
+        class GameObject
+    }
+    
+    namespace Unity.Entities{
+        abstract class Baker<TAuthoringType>
+        interface ISystem
+        interface IComponentData
+        interface IBufferElementData
+        annotation "Other Component Interfaces"
+    }
+    
+    package "*Components*"{
+        class ExampleBaking 
+        class ExampleData
+        class ExampleBuffer 
+        annotation "Other Example Components"
+    }
+        IComponentData <|-- ExampleData
+        IBufferElementData <|-- ExampleBuffer
+        "Other Component Interfaces" <|.. "Other Example Components"
+        IComponentData <|-- ExampleBaking :[BakingType]
+    
+    class ExampleAuthoring
+        MonoBehaviour <|-- ExampleAuthoring
+        GameObject *-- ExampleAuthoring
+        
+    package "Conversion World (Authoring/Baking)"{
+        class ExampleBaker<ExampleAuthoring>
+        {
+        + override Bake(ExampleAuthoring)
+        }
+            Baker <|-- ExampleBaker
+            ExampleAuthoring -- ExampleBaker
+            ExampleBaker -- ExampleBaking
+        
+        circle BakingEntity
+            ExampleBaker -- BakingEntity
+            ExampleBaking *-- BakingEntity
+        
+        class ExampleBakingSystem
+            ISystem <|-- ExampleBakingSystem
+            BakingEntity -- ExampleBakingSystem
+            ExampleBaking -- ExampleBakingSystem
+            
+        annotation "Other Baking Systems"
+            ExampleBakingSystem -[hidden]- "Other Baking Systems"
+    }
+    
+    package "Main World (Runtime)"{
+        package "*Entities*"{
+            circle ExampleEntity
+                ExampleBakingSystem -- ExampleEntity
+                ExampleData *- ExampleEntity
+                ExampleBuffer *- ExampleEntity
+                "Other Example Components" *. ExampleEntity
+            circle "Other Entities"
+        }
+            ExampleEntity -[hidden]- "Other Entities"
+
+        package "*Systems*"{
+            class ExampleSystem 
+                ISystem <|-- ExampleSystem
+                ExampleEntity - ExampleSystem
+                ExampleData -- ExampleSystem
+                ExampleBuffer -- ExampleSystem
+                "Other Example Components" .. ExampleSystem
+            annotation "Other RUNTIME Systems"
+        }
+            ExampleSystem -[hidden]- "Other RUNTIME Systems"
+    }
+    
+}    
+@enduml
